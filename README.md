@@ -7,7 +7,7 @@ simple n-dimensional array blocks
 Suppose you need to divide an n-dimensional numpy array into blocks. Imagine being able to do the following:
 
 ```
-blocks = get_blocks(array_shape, block_shape, step)
+blocks = BlockSet(array_shape, block_shape, step)
 
 for block in blocks:
 	numpy_array[block]

@@ -3,8 +3,36 @@ import numbers
 
 
 
+class BlockSet(object):
+    """
+    """
 
-def find_blocks(array_shape, block_shape, step=1):
+    def __init__(self, array_shape, block_shape=None, step=None):
+
+        self.array_shape = check_array_shape(array_shape)
+        self.block_shape = check_block_shape(block_shape, array_shape)
+        self.step = check_step(step, array_shape)
+
+        self.find_blocks()
+        self.blocks_to_vertices()
+
+    def __iter__(self):
+        return self.blocks.__iter__()
+
+
+
+
+    def find_blocks(self):
+        self.blocks = find_blocks(self.array_shape, self.block_shape, self.step)
+
+    def blocks_to_vertices(self):
+        self.block_vertices = blocks_to_vertices(self.blocks)
+
+
+
+
+
+def find_blocks(array_shape, block_shape, step):
     """Select blocks.
 
     Keyword arguments:
@@ -18,10 +46,6 @@ def find_blocks(array_shape, block_shape, step=1):
 
     """
 
-    array_shape = check_array_shape(array_shape)
-    block_shape = check_block_shape(block_shape, array_shape)
-    step = check_step(step, array_shape)
-
     ndim = len(array_shape)
 
     blocks = []
@@ -31,6 +55,17 @@ def find_blocks(array_shape, block_shape, step=1):
         blocks.append([slice(coord_i, coord_i + block_shape[n]) for coord_i in coords])
 
     return list(product(*blocks))
+
+
+def blocks_to_vertices(blocks):
+    """Find vertices for a list of blocks. Return a list of lists of lists.
+    The kth item of the outer list is the kth block. The ith item of the
+    middle list is the ith vertex. The nth item of an inner list is the nth
+    coordinate for that vertex: [[[vertex1], [vertex2],...],...] also written as
+    [[[x0, y0,...], [x1, y1,...],...],...]
+    """
+
+    return filter(block_to_vertices, blocks)
 
 
 
@@ -56,7 +91,6 @@ def block_to_vertices(block):
             va[m] = va[m] + va[m][::-1]
 
 
-
     # list by vertex [[x0, y0,...], [x1, y1,...],...]
     vv = []
     for i in xrange(2 ** ndim):
@@ -69,14 +103,7 @@ def block_to_vertices(block):
 
 
 
-def blocks_to_vertices(blocks):
-    """Find vertices for a list of blocks. Return a list of lists of lists.
-    The kth item of the outer list is the kth block. The ith item of the
-    middle list is the ith vertex. The nth item of an inner list is the nth
-    coordinate for that vertex: [[[vertex1], [vertex2],...],...] also written as
-    [[[x0, y0,...], [x1, y1,...],...],...]
-    """
-    return filter(block_to_vertices, blocks)
+
 
 
 
@@ -86,6 +113,10 @@ def blocks_to_vertices(blocks):
 def check_array_shape(array_shape):
     """Helper function to verify array shape
     """
+    if array_shape == None:
+        raise ValueError('[Error] Encountered input error for array_shape. ' +
+            'array_shape was not specified')
+
     if isinstance(array_shape, numbers.Number):
         array_shape = (array_shape,)
     elif isinstance(array_shape, list):
@@ -110,7 +141,9 @@ def check_array_shape(array_shape):
 def check_block_shape(block_shape, array_shape):
     """Helper function to verify block shape
     """
-    array_shape = check_array_shape(array_shape)
+
+    if block_shape == None:
+        block_shape = array_shape
 
     if isinstance(block_shape, numbers.Number):
         block_shape = (block_shape,) * len(array_shape)
@@ -144,7 +177,10 @@ def check_block_shape(block_shape, array_shape):
 def check_step(step, array_shape):
     """Helper function to verify step
     """
-    array_shape = check_array_shape(array_shape)
+
+    if step == None:
+        step = (1,) * len(array_shape)
+
     if isinstance(step, numbers.Number):
         step = (step,) * len(array_shape)
     elif isinstance(step, list):

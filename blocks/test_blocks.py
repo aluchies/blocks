@@ -1,8 +1,18 @@
 import unittest 
-from blocks import check_array_shape, check_block_shape, check_step, \
+from blocks import BlockSet, check_array_shape, check_block_shape, check_step, \
     find_blocks, block_to_vertices
 
 class TestCode(unittest.TestCase):
+
+
+
+    def test_BlockSet(self):
+        """
+        """
+        bs = BlockSet((2,2))
+        self.assertEqual(bs.array_shape, (2, 2))
+
+
     def test_check_array_shape(self):
         """
         """
@@ -19,18 +29,24 @@ class TestCode(unittest.TestCase):
         """
         """
 
+        block_shape = check_block_shape(None, (2, 3))
+        self.assertEqual(block_shape, (2, 3))
+
         block_shape = check_block_shape((2, 3), (2, 3))
         self.assertEqual(block_shape, (2, 3))
 
         block_shape = check_block_shape([3, 4, 2], (3, 4, 2))
         self.assertEqual(block_shape, (3, 4, 2))
 
-        block_shape = check_block_shape(3, 5)
+        block_shape = check_block_shape(3, (5,))
         self.assertEqual(block_shape, (3,))
 
     def test_check_step(self):
         """
         """
+
+        step = check_step(None, (2, 3))
+        self.assertEqual(step, (1, 1))
 
         step = check_step((2, 3), (2, 3))
         self.assertEqual(step, (2, 3))
@@ -38,7 +54,7 @@ class TestCode(unittest.TestCase):
         step = check_step([3, 4, 2], (3, 4, 2))
         self.assertEqual(step, (3, 4, 2))
 
-        step = check_step(3, 5)
+        step = check_step(3, (5,))
         self.assertEqual(step, (3,))
 
 
@@ -46,16 +62,17 @@ class TestCode(unittest.TestCase):
         """
         """
 
-        blocks = find_blocks((2, 2), (2, 2), 1)
+        blocks = find_blocks((2, 2), (2, 2), (1, 1))
         self.assertEqual(blocks, [(slice(0, 2, None), slice(0, 2, None))])
 
-        blocks = find_blocks((2, 2), (1, 1), 2)
+        blocks = find_blocks((2, 2), (1, 1), (2, 2))
         self.assertEqual(blocks, [(slice(0, 1, None), slice(0, 1, None))])
 
 
     def test_block_to_vertices(self):
         """
         """
+
 
         block = [slice(0, 1)]
         vertices = block_to_vertices(block)
