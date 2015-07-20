@@ -95,9 +95,6 @@ def find_block_coords(array_shape, block_shape, step=1):
     Return values:
     origin_list -- list of origin points
 
-    Modified from sklearn.lib.view_as_windows()
-    https://github.com/scikit-image/scikit-image/blob/master/skimage/util/shape.py
-
     """
 
     array_shape = check_array_shape(array_shape)
