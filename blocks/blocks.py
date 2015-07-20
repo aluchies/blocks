@@ -18,7 +18,7 @@ def check_array_shape(array_shape):
         raise ValueError('[Error] Encountered negative value for \
             array_shape.')
 
-    if any([isinstance(a, int) for a in array_shape]):
+    if not all([isinstance(a, int) for a in array_shape]):
         raise ValueError('[Error] Encountered non-integer values for \
             array_shape.')
 
@@ -27,6 +27,8 @@ def check_array_shape(array_shape):
 
 
 def check_block_shape(block_shape, array_shape):
+    array_shape = check_array_shape(array_shape)
+
     if isinstance(block_shape, numbers.Number):
         block_shape = (block_shape,) * len(array_shape)
     elif isinstance(block_shape, list):
@@ -40,7 +42,7 @@ def check_block_shape(block_shape, array_shape):
         raise ValueError('[Error] Encountered input error for block_shape. \
             Different number of dimensions for array_shape and block_shape.')
 
-    if any([b <= 0 for a in block_shape]):
+    if any([b <= 0 for b in block_shape]):
         raise ValueError('[Error] Encountered negative value for \
             array_shape.')
 
@@ -48,7 +50,7 @@ def check_block_shape(block_shape, array_shape):
         raise ValueError('[Error] Encountered block_shape larger than \
             array_shape.')
 
-    if any([isinstance(b, int) for b in array_shape]):
+    if not all([isinstance(b, int) for b in array_shape]):
         raise ValueError('[Error] Encountered non-integer values for \
             block_shape.')
 
@@ -57,6 +59,7 @@ def check_block_shape(block_shape, array_shape):
 
 
 def check_step(step, array_shape):
+    array_shape = check_array_shape(array_shape)
     if isinstance(step, numbers.Number):
         step = (step,) * len(array_shape)
     elif isinstance(step, list):
@@ -74,7 +77,7 @@ def check_step(step, array_shape):
         raise ValueError('[Error] Encountered negative value for \
             step.')
 
-    if any([isinstance(s, int) for s in step_shape]):
+    if not all([isinstance(s, int) for s in step ]):
         raise ValueError('[Error] Encountered non-integer values for \
             step.')
 
@@ -83,17 +86,17 @@ def check_step(step, array_shape):
 
 
 
-def find_block_coords(array_shape, block_shape, step=1):
-    """Determine coordinates for overlapping blocks havine block_shape and step
-    size.
+def find_blocks(array_shape, block_shape, step=1):
+    """Select blocks.
 
     Keyword arguments:
-    array_shape -- shape of the array being divided
-    block_shape -- size of the blocks
-    step -- step size between blocks
+    array_shape -- shape of the array being divided, tuple(array_shape_dim0,...)
+    block_shape -- size of the blocks, tuple(block_shape_dim0,...)
+    step -- step size between blocks, tuple(step_dim0, step_dim1,...)
 
     Return values:
-    origin_list -- list of origin points
+    blocks -- list of tuples. each tuple contains slices for a block that can be
+                used for numpy array indexing
 
     """
 
@@ -103,9 +106,10 @@ def find_block_coords(array_shape, block_shape, step=1):
 
     ndim = len(array_shape)
 
-
-    block_origin_list = []
+    blocks = []
     for n in xrange(ndim):
-        block_origin_list.append(range(array_shape[n] - block_shape[n] + 1)[::step[n]])
+        coords = range(array_shape[n] - block_shape[n] + 1)
+        coords = coords[::step[n]]
+        blocks.append([slice(c, c + block_shape[n]) for c in coords])
 
-    return list(product(*block_origin_list))
+    return list(product(*blocks))
