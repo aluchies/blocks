@@ -1,6 +1,6 @@
 import unittest 
 from blocks import check_array_shape, check_block_shape, check_step, \
-    find_blocks
+    find_blocks, block_to_vertices
 
 class TestCode(unittest.TestCase):
     def test_check_array_shape(self):
@@ -51,6 +51,36 @@ class TestCode(unittest.TestCase):
 
         blocks = find_blocks((2, 2), (1, 1), 2)
         self.assertEqual(blocks, [(slice(0, 1, None), slice(0, 1, None))])
+
+
+    def test_block_to_vertices(self):
+        """
+        """
+
+        block = [slice(0, 1)]
+        vertices = block_to_vertices(block)
+        self.assertEqual(vertices, [[0], [0]])
+
+        block = [slice(0, 2)]
+        vertices = block_to_vertices(block)
+        self.assertEqual(vertices, [[0], [1]])
+
+        block = [slice(0, 3)]
+        vertices = block_to_vertices(block)
+        self.assertEqual(vertices, [[0], [2]])
+
+        block = [slice(0, 1), slice(0, 1)]
+        vertices = block_to_vertices(block)
+        self.assertEqual(vertices, [[0, 0]] * 4)
+
+        block = [slice(0, 3), slice(0, 1)]
+        vertices = block_to_vertices(block)
+        self.assertEqual(vertices, [[0, 0], [2, 0], [2, 0], [0, 0]])
+
+        block = [slice(0, 3), slice(0, 4)]
+        vertices = block_to_vertices(block)
+        self.assertEqual(vertices, [[0, 0], [2, 0], [2, 3], [0, 3]])
+ 
 
 
 if __name__ == '__main__':
