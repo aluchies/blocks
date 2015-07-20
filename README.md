@@ -1,8 +1,8 @@
 blocks
 ======
 
-subdivide numpy arrays and process pieces separately
-----------------------------------------------------
+subdivide n-dimensional arrays (possibly overlapping) for block-wise processing
+-------------------------------------------------------------------------------
 
 Installation
 ------------
