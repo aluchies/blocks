@@ -90,7 +90,7 @@ def block_in_polygon(block_vertices, polygon_vertices):
             + 'Vertices do not have two coordinates.')
 
     # repeat first polygon vertex at end of list
-    if polygon_vertices[0] != polygon_vertices[-1]:
+    if not all([a == b for a, b in zip(polygon_vertices[0], polygon_vertices[-1])]):
         polygon_vertices = polygon_vertices + [polygon_vertices[0]]
 
     # create path object
