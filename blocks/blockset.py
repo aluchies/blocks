@@ -45,7 +45,7 @@ class BlockSet(UserList):
                 self.overlap = step_to_overlap(step, self.block_shape)
             elif overlap != None:
                 self.overlap = check_overlap(overlap, self.block_shape)
-                self.step = overlap_to_step(overlap, self.block_shape)
+                self.step = overlap_to_step(self.overlap, self.block_shape)
             else:
                 self.overlap = check_overlap(0.0, self.block_shape)
                 self.step = overlap_to_step(self.overlap, self.block_shape)
