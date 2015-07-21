@@ -73,7 +73,7 @@ def filter_blocks(block, polytope_vertices):
     if block.ndim == 1:
         return block_in_segment(block.vertices, polytope_vertices)
     elif block.ndim == 2:
-        return block_in_polygon(block.vertices, polygon_vertices)
+        return block_in_polygon(block.vertices, polytope_vertices)
     else:
         print('filter_blocks() is undefined for ndim > 2')
         return True
