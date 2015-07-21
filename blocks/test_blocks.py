@@ -12,6 +12,12 @@ class TestCode(unittest.TestCase):
         """
         bs = BlockSet((2,2))
         self.assertEqual(bs.array_shape, (2, 2))
+        self.assertEqual(bs.block_shape, (2, 2))
+        self.assertEqual(bs.step, (2, 2))
+        self.assertEqual(bs.overlap, (0, 0))
+        self.assertEqual(bs.blocks, [(slice(0, 2, None), slice(0, 2, None))])
+        self.assertEqual(bs.vertices, [[0, 0], [1, 0], [1, 1], [0, 1]])
+
 
 
 
@@ -69,6 +75,9 @@ class TestCode(unittest.TestCase):
         self.assertEqual(overlap, None)
 
         overlap = check_overlap((0.5, ), (2, ))
+        self.assertEqual(overlap, (0.5, ))
+
+        overlap = check_overlap(0.5, (2, ))
         self.assertEqual(overlap, (0.5, ))
 
         overlap = check_overlap((0.0, ), (2, ))

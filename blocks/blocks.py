@@ -37,7 +37,8 @@ class BlockSet(object):
         self.blocks = find_blocks(self.array_shape, self.block_shape, self.step)
 
     def blocks_to_vertices(self):
-        self.block_vertices = blocks_to_vertices(self.blocks)
+        self.vertices = find_vertices(self.blocks)
+
 
 
 
@@ -97,7 +98,7 @@ def find_blocks(array_shape, block_shape, step):
     return list(product(*blocks))
 
 
-def blocks_to_vertices(blocks):
+def find_vertices(blocks):
     """Find vertices for a list of blocks. Return a list of lists of lists.
     The kth item of the outer list is the kth block. The ith item of the
     middle list is the ith vertex. The nth item of an inner list is the nth
@@ -105,7 +106,7 @@ def blocks_to_vertices(blocks):
     [[[x0, y0,...], [x1, y1,...],...],...]
     """
 
-    return filter(block_to_vertices, blocks)
+    return apply(block_to_vertices, blocks)
 
 
 
