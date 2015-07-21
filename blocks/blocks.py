@@ -25,7 +25,7 @@ class BlockSet(object):
 
 
         self.find_blocks()
-        self.blocks_to_vertices()
+        self.find_vertices()
 
     def __iter__(self):
         return self.blocks.__iter__()
@@ -36,7 +36,7 @@ class BlockSet(object):
     def find_blocks(self):
         self.blocks = find_blocks(self.array_shape, self.block_shape, self.step)
 
-    def blocks_to_vertices(self):
+    def find_vertices(self):
         self.vertices = find_vertices(self.blocks)
 
 
@@ -106,7 +106,7 @@ def find_vertices(blocks):
     [[[x0, y0,...], [x1, y1,...],...],...]
     """
 
-    return apply(block_to_vertices, blocks)
+    return map(block_to_vertices, blocks)
 
 
 

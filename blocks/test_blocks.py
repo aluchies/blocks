@@ -16,7 +16,8 @@ class TestCode(unittest.TestCase):
         self.assertEqual(bs.step, (2, 2))
         self.assertEqual(bs.overlap, (0, 0))
         self.assertEqual(bs.blocks, [(slice(0, 2, None), slice(0, 2, None))])
-        self.assertEqual(bs.vertices, [[0, 0], [1, 0], [1, 1], [0, 1]])
+        self.assertEqual(bs.vertices, [[[0, 0], [1, 0], [1, 1], [0, 1]]])
+
 
 
 
