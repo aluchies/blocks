@@ -33,9 +33,6 @@ class BlockSet(UserList):
 
 
 
-    def __iter__(self):
-        return self.blocks.__iter__()
-
 
     def find_blocks(self):
         bs = find_blocks(self.array_shape, self.block_shape, self.step)
