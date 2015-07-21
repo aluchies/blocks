@@ -1,9 +1,11 @@
 import unittest 
-from blocks import BlockSet, check_array_shape, check_block_shape, check_step, \
-    find_blocks, block_to_vertices, overlap_to_step, step_to_overlap, \
-    check_overlap
+from blockset import BlockSet, \
+    check_array_shape, check_block_shape, check_step, check_overlap, \
+    overlap_to_step, step_to_overlap, find_blocks
+from block import Block
 
 class TestCode(unittest.TestCase):
+
 
 
 
@@ -15,8 +17,8 @@ class TestCode(unittest.TestCase):
         self.assertEqual(bs.block_shape, (2, 2))
         self.assertEqual(bs.step, (2, 2))
         self.assertEqual(bs.overlap, (0, 0))
-        self.assertEqual(bs.blocks, [(slice(0, 2, None), slice(0, 2, None))])
-        self.assertEqual(bs.vertices, [[[0, 0], [1, 0], [1, 1], [0, 1]]])
+        self.assertEqual(bs, [ Block( [slice(0, 2, None), slice(0, 2, None)] ) ])
+
 
 
 
@@ -99,34 +101,7 @@ class TestCode(unittest.TestCase):
         self.assertEqual(blocks, [(slice(0, 1, None), slice(0, 1, None))])
 
 
-    def test_block_to_vertices(self):
-        """
-        """
 
-
-        block = [slice(0, 1)]
-        vertices = block_to_vertices(block)
-        self.assertEqual(vertices, [[0], [0]])
-
-        block = [slice(0, 2)]
-        vertices = block_to_vertices(block)
-        self.assertEqual(vertices, [[0], [1]])
-
-        block = [slice(0, 3)]
-        vertices = block_to_vertices(block)
-        self.assertEqual(vertices, [[0], [2]])
-
-        block = [slice(0, 1), slice(0, 1)]
-        vertices = block_to_vertices(block)
-        self.assertEqual(vertices, [[0, 0]] * 4)
-
-        block = [slice(0, 3), slice(0, 1)]
-        vertices = block_to_vertices(block)
-        self.assertEqual(vertices, [[0, 0], [2, 0], [2, 0], [0, 0]])
-
-        block = [slice(0, 3), slice(0, 4)]
-        vertices = block_to_vertices(block)
-        self.assertEqual(vertices, [[0, 0], [2, 0], [2, 3], [0, 3]])
 
 
 

@@ -1,14 +1,19 @@
+from UserList import UserList
+from block import Block
 from itertools import product
 import numbers
 
 
 
-class BlockSet(object):
+
+
+class BlockSet(UserList):
     """
     """
 
     def __init__(self, array_shape, block_shape=None, step=None, overlap=None):
 
+        # check array_shape and block_shape
         self.array_shape = check_array_shape(array_shape)
         self.block_shape = check_block_shape(block_shape, array_shape)
 
@@ -23,21 +28,21 @@ class BlockSet(object):
             self.overlap = check_overlap(0.0, self.block_shape)
             self.step = overlap_to_step(self.overlap, self.block_shape)
 
+        initlist = self.find_blocks()
+        UserList.__init__(self, initlist)
 
-        self.find_blocks()
-        self.find_vertices()
+
 
     def __iter__(self):
         return self.blocks.__iter__()
 
 
-
-
     def find_blocks(self):
-        self.blocks = find_blocks(self.array_shape, self.block_shape, self.step)
+        bs = find_blocks(self.array_shape, self.block_shape, self.step)
+        return [Block(b) for b in bs]
 
-    def find_vertices(self):
-        self.vertices = find_vertices(self.blocks)
+
+
 
 
 
@@ -98,49 +103,9 @@ def find_blocks(array_shape, block_shape, step):
     return list(product(*blocks))
 
 
-def find_vertices(blocks):
-    """Find vertices for a list of blocks. Return a list of lists of lists.
-    The kth item of the outer list is the kth block. The ith item of the
-    middle list is the ith vertex. The nth item of an inner list is the nth
-    coordinate for that vertex: [[[vertex1], [vertex2],...],...] also written as
-    [[[x0, y0,...], [x1, y1,...],...],...]
-    """
-
-    return map(block_to_vertices, blocks)
 
 
 
-
-
-
-def block_to_vertices(block):
-    """Find vertices for a block. Return a list of lists. The ith item of the
-    outer list is the ith vertex. The nth item of an inner list is the nth
-    coordinate for that vertex: [[vertex1], [vertex2],...] also written as
-    [[x0, y0,...], [x1, y1,...],...]
-    """
-
-    ndim = len(block)
-
-    # list vertices by axis [[x0, x1,...], [y0, y1,...],...]
-    va = []
-    for n in xrange(0, ndim):
-        dim_vertices = [ block[n].start, block[n].stop - 1 ]
-        va.append( sorted(dim_vertices * 2 ** n ))
-        # loop through previous dimensions
-        for m in xrange(0, n):
-            va[m] = va[m] + va[m][::-1]
-
-
-    # list by vertex [[x0, y0,...], [x1, y1,...],...]
-    vv = []
-    for i in xrange(2 ** ndim):
-        vv.append([va[0][i]])
-        for n in xrange(1, ndim):
-            vv[i].append(va[n][i])
-
-
-    return vv
 
 
 
@@ -248,7 +213,7 @@ def check_step(step, array_shape):
 
 
 def check_overlap(overlap, array_shape):
-    """
+    """Helper function to verify overlap
     """
     if overlap == None:
         return None

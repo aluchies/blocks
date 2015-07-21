@@ -1,3 +1,4 @@
 __version__ = '0.0.1'
 
-from blocks import BlockSet
+from blockset import BlockSet
+from block import Block
