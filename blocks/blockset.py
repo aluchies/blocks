@@ -13,7 +13,7 @@ class BlockSet(UserList):
 
     def __init__(self, array_shape=None, block_shape=None, step=None, overlap=None, initlist=None):
 
-        # There are two ways to construct a Blockset
+        # There are two ways to construct a Blockset. Method 1 supercedes 2.
         # Method 1: provide a list of blocks via initlist
         if initlist != None:
 
@@ -73,7 +73,7 @@ def filter_blocks(block, polytope_vertices):
     if block.ndim == 1:
         return block_in_segment(block.vertices, polytope_vertices)
     elif block.ndim == 2:
-        return block_in_polytope(block.vertices, polygon_vertices)
+        return block_in_polygon(block.vertices, polygon_vertices)
     else:
         print('filter_blocks() is undefined for ndim > 2')
         return True
