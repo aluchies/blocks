@@ -28,15 +28,8 @@ class BlockSet(UserList):
             self.overlap = check_overlap(0.0, self.block_shape)
             self.step = overlap_to_step(self.overlap, self.block_shape)
 
-        initlist = self.find_blocks()
+        initlist = find_blocks(self.array_shape, self.block_shape, self.step)
         UserList.__init__(self, initlist)
-
-
-
-
-    def find_blocks(self):
-        bs = find_blocks(self.array_shape, self.block_shape, self.step)
-        return [Block(b) for b in bs]
 
 
 
@@ -97,7 +90,8 @@ def find_blocks(array_shape, block_shape, step):
         coords = coords[::step[n]]
         blocks.append([slice(coord_i, coord_i + block_shape[n]) for coord_i in coords])
 
-    return list(product(*blocks))
+
+    return [Block(b) for b in list(product(*blocks))]
 
 
 

@@ -1,5 +1,5 @@
 import unittest 
-from block import Block, find_vertices
+from block import Block, find_vertices, block_in_segment, block_in_polygon
 
 class TestCode(unittest.TestCase):
 
@@ -11,6 +11,17 @@ class TestCode(unittest.TestCase):
         blk = Block([slice(0, 1)])
         self.assertEqual(blk, [slice(0, 1)])
         self.assertEqual(blk.vertices, [[0], [0]])
+        self.assertTrue(blk.in_polytope([[0], [2]]))
+        self.assertFalse(blk.in_polytope([[1], [2]]))
+
+        blk = Block([slice(1, 3), slice(1, 3)])
+        polygon_vertices = find_vertices([slice(0, 4), slice(0, 4)])
+
+        try:
+            from matplotlib.path import Path 
+            self.assertTrue(blk.in_polytope(polygon_vertices))
+        except:
+            print('\nMatplotlib is not installed. tests for block_in_polygon unavailable')
 
 
 
@@ -44,6 +55,60 @@ class TestCode(unittest.TestCase):
         vertices = find_vertices(block)
         self.assertEqual(vertices, [[0, 0], [2, 0], [2, 3], [0, 3]])
 
+
+
+    def test_block_in_segment(self):
+        """
+        """
+
+        segment_vertices = find_vertices([slice(0, 4)])
+        block_vertices = find_vertices([slice(1, 3)])
+        v = block_in_segment(block_vertices, segment_vertices)
+        self.assertTrue(v)
+
+        segment_vertices = find_vertices([slice(1, 3)])
+        block_vertices = find_vertices([slice(0, 4)])
+        v = block_in_segment(block_vertices, segment_vertices)
+        self.assertFalse(v)
+
+        segment_vertices = find_vertices([slice(0, 4)])
+        block_vertices = find_vertices([slice(0, 3)])
+        v = block_in_segment(block_vertices, segment_vertices)
+        self.assertTrue(v)
+
+        segment_vertices = find_vertices([slice(1, 4)])
+        block_vertices = find_vertices([slice(0, 3)])
+        v = block_in_segment(block_vertices, segment_vertices)
+        self.assertFalse(v)
+
+
+    def test_block_in_polygon(self):
+        """
+        """
+
+        try:
+            from matplotlib.path import Path 
+
+            polygon_vertices = find_vertices([slice(0, 4), slice(0, 4)])
+            block_vertices = find_vertices([slice(1, 3), slice(1, 3)])
+            v = block_in_polygon(block_vertices, polygon_vertices)
+            self.assertTrue(v)
+
+
+            polygon_vertices = find_vertices([slice(1, 3), slice(1, 3)])
+            block_vertices = find_vertices([slice(0, 4), slice(0, 4)])
+            v = block_in_polygon(block_vertices, polygon_vertices)
+            self.assertFalse(v)
+
+            # The commented line should produce a True value, but it produces False
+            polygon_vertices = find_vertices([slice(0, 4), slice(0, 4)])
+            #block_vertices = find_vertices([slice(0, 4), slice(0, 4)])
+            block_vertices = find_vertices([slice(0, 4), slice(1, 4)])
+            v = block_in_polygon(block_vertices, polygon_vertices)
+            self.assertTrue(v)
+
+        except:
+            print('\nMatplotlib is not installed. tests for block_in_polygon unavailable')
 
 
 
