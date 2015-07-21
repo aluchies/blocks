@@ -1,5 +1,5 @@
 from UserList import UserList
-from block import Block
+from block import Block, block_in_polygon, block_in_segment
 from itertools import product
 import numbers
 
@@ -11,25 +11,73 @@ class BlockSet(UserList):
     """
     """
 
-    def __init__(self, array_shape, block_shape=None, step=None, overlap=None):
+    def __init__(self, array_shape=None, block_shape=None, step=None, overlap=None, initlist=None):
 
-        # check array_shape and block_shape
-        self.array_shape = check_array_shape(array_shape)
-        self.block_shape = check_block_shape(block_shape, array_shape)
+        # There are two ways to construct a Blockset
+        # Method 1: provide a list of blocks via initlist
+        if initlist != None:
 
-        # step supercedes overlap, use zero overlap if neither specified
-        if step != None:
-            self.step = check_step(step, self.array_shape)
-            self.overlap = step_to_overlap(step, self.block_shape)
-        elif overlap != None:
-            self.overlap = check_overlap(overlap, self.block_shape)
-            self.step = overlap_to_step(overlap, self.block_shape)
+            initlist = list(initlist)
+
+            if not all([isinstance(b, Block) for b in initlist]):
+                raise ValueError('[Error] Encountered input error for initlist. ' +
+                    'initlist does not contain Blocks')
+
+            self.array_shape = array_shape
+            self.block_shape = block_shape
+            self.step = step
+            self.overlap = overlap
+
+            if len(initlist) > 0:
+                self.ndim = initlist[0].ndim
+            else:
+                self.ndim = 0
+
+        # Method 2: specify array_shape, block_shape, step/overlap
         else:
-            self.overlap = check_overlap(0.0, self.block_shape)
-            self.step = overlap_to_step(self.overlap, self.block_shape)
+            # check array_shape and block_shape
+            self.array_shape = check_array_shape(array_shape)
+            self.block_shape = check_block_shape(block_shape, array_shape)
 
-        initlist = find_blocks(self.array_shape, self.block_shape, self.step)
+            # step supercedes overlap, use zero overlap if neither specified
+            if step != None:
+                self.step = check_step(step, self.array_shape)
+                self.overlap = step_to_overlap(step, self.block_shape)
+            elif overlap != None:
+                self.overlap = check_overlap(overlap, self.block_shape)
+                self.step = overlap_to_step(overlap, self.block_shape)
+            else:
+                self.overlap = check_overlap(0.0, self.block_shape)
+                self.step = overlap_to_step(self.overlap, self.block_shape)
+
+            self.ndim = len(array_shape)
+
+            initlist = find_blocks(self.array_shape, self.block_shape, self.step)
+
+
         UserList.__init__(self, initlist)
+
+
+    def filter_blocks(self, polytope_vertices):
+        initlist = filter(lambda x : filter_blocks(x, polytope_vertices), self)
+        return BlockSet(self.array_shape, self.block_shape, self.step, self.overlap, initlist)
+
+
+
+
+
+
+def filter_blocks(block, polytope_vertices):
+    """
+    """
+    if block.ndim == 1:
+        return block_in_segment(block.vertices, polytope_vertices)
+    elif block.ndim == 2:
+        return block_in_polytope(block.vertices, polygon_vertices)
+    else:
+        print('filter_blocks() is undefined for ndim > 2')
+        return True
+
 
 
 
