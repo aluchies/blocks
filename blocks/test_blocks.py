@@ -1,6 +1,7 @@
 import unittest 
 from blocks import BlockSet, check_array_shape, check_block_shape, check_step, \
-    find_blocks, block_to_vertices
+    find_blocks, block_to_vertices, overlap_to_step, step_to_overlap, \
+    check_overlap
 
 class TestCode(unittest.TestCase):
 
@@ -11,6 +12,7 @@ class TestCode(unittest.TestCase):
         """
         bs = BlockSet((2,2))
         self.assertEqual(bs.array_shape, (2, 2))
+
 
 
     def test_check_array_shape(self):
@@ -58,6 +60,24 @@ class TestCode(unittest.TestCase):
         self.assertEqual(step, (3,))
 
 
+
+    def test_check_overlap(self):
+        """
+        """
+
+        overlap = check_overlap(None, (2, 3))
+        self.assertEqual(overlap, None)
+
+        overlap = check_overlap((0.5, ), (2, ))
+        self.assertEqual(overlap, (0.5, ))
+
+        overlap = check_overlap((0.0, ), (2, ))
+        self.assertEqual(overlap, (0.0, ))
+
+        overlap = check_overlap((0.5, 0.5), (2, 2))
+        self.assertEqual(overlap, (0.5, 0.5))
+
+
     def test_find_blocks(self):
         """
         """
@@ -97,7 +117,37 @@ class TestCode(unittest.TestCase):
         block = [slice(0, 3), slice(0, 4)]
         vertices = block_to_vertices(block)
         self.assertEqual(vertices, [[0, 0], [2, 0], [2, 3], [0, 3]])
- 
+
+
+
+    def test_overlap_to_step(self):
+        """
+        """
+
+        step = overlap_to_step((0.5, ), (2, ))
+        self.assertEqual(step, (1,))
+
+        step = overlap_to_step((0.5, ), (4, ))
+        self.assertEqual(step, (2,))
+
+        step = overlap_to_step((0.5, 0.5), (4, 4))
+        self.assertEqual(step, (2, 2))
+
+
+
+    def test_step_to_overlap(self):
+        """
+        """
+
+        overlap = step_to_overlap( (1,), (2,) )
+        self.assertEqual(overlap, (0.5,))
+
+        overlap = step_to_overlap( (2,), (4,) )
+        self.assertEqual(overlap, (0.5,))
+
+        overlap = step_to_overlap( (2, 2), (4, 4) )
+        self.assertEqual(overlap, (0.5, 0.5))
+
 
 
 if __name__ == '__main__':

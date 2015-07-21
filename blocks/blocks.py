@@ -7,11 +7,22 @@ class BlockSet(object):
     """
     """
 
-    def __init__(self, array_shape, block_shape=None, step=None):
+    def __init__(self, array_shape, block_shape=None, step=None, overlap=None):
 
         self.array_shape = check_array_shape(array_shape)
         self.block_shape = check_block_shape(block_shape, array_shape)
-        self.step = check_step(step, array_shape)
+
+        # step supercedes overlap, use zero overlap if neither specified
+        if step != None:
+            self.step = check_step(step, self.array_shape)
+            self.overlap = step_to_overlap(step, self.block_shape)
+        elif overlap != None:
+            self.overlap = check_overlap(overlap, self.block_shape)
+            self.step = overlap_to_step(overlap, self.block_shape)
+        else:
+            self.overlap = check_overlap(0.0, self.block_shape)
+            self.step = overlap_to_step(self.overlap, self.block_shape)
+
 
         self.find_blocks()
         self.blocks_to_vertices()
@@ -28,6 +39,35 @@ class BlockSet(object):
     def blocks_to_vertices(self):
         self.block_vertices = blocks_to_vertices(self.blocks)
 
+
+
+
+
+
+
+def overlap_to_step(overlap, block_shape):
+    """
+    """
+    step = []
+    ndim = len(overlap)
+
+    for n in xrange(ndim):
+        step.append(int( block_shape[n] * (1 -  overlap[n] ) ))
+
+    return tuple(step)
+
+
+
+
+def step_to_overlap(step, block_shape):
+    """
+    """
+    overlap = []
+    ndim = len(step)
+    for n in xrange(ndim):
+        overlap.append( 1 - float(step[n]) / block_shape[n] )
+
+    return tuple(overlap)
 
 
 
@@ -124,7 +164,7 @@ def check_array_shape(array_shape):
 
     if not isinstance(array_shape, tuple):
         raise ValueError('[Error] Encountered input error for array_shape. ' +
-            'Acceptable input types include number, list, tuple, or 1D ndarray')
+            'Acceptable input types include number, list, tuple')
 
     if any([a <= 0 for a in array_shape]):
         raise ValueError('[Error] Encountered negative value for ' +
@@ -152,7 +192,7 @@ def check_block_shape(block_shape, array_shape):
 
     if not isinstance(block_shape, tuple):
         raise ValueError('[Error] Encountered input error for block_shape. ' +
-            'Acceptable input types include number, list, tuple, or 1D ndarray')
+            'Acceptable input types include number, list, tuple')
 
     if len(block_shape) != len(array_shape):
         raise ValueError('[Error] Encountered input error for block_shape. ' +
@@ -188,7 +228,7 @@ def check_step(step, array_shape):
 
     if not isinstance(step, tuple):
         raise ValueError('[Error] Encountered input error for step. ' +
-            'Acceptable input types include number, list, tuple, or 1D ndarray')
+            'Acceptable input types include number, list, tuple')
 
     if len(step) != len(array_shape):
         raise ValueError('[Error] Encountered input error for step. ' +
@@ -203,3 +243,38 @@ def check_step(step, array_shape):
             'step.')
 
     return step
+
+
+
+def check_overlap(overlap, array_shape):
+    """
+    """
+    if overlap == None:
+        return None
+
+    if isinstance(overlap, numbers.Number):
+        overlap = (overlap,) * len(array_shape)
+    elif isinstance(overlap, list):
+        overlap = tuple(overlap)
+
+    if not isinstance(overlap, tuple):
+        raise ValueError('[Error] Encountered input error for overlap. ' +
+            'Acceptable input types include number, list, or tuple')
+
+
+    if len(overlap) != len(array_shape):
+        raise ValueError('[Error] Encountered input error for overlap. ' +
+            'Different number of dimensions for array_shape and block_shape.')
+
+    if any([not isinstance(o, numbers.Number) for o in overlap]):
+        raise ValueError('[Error] Encountered non-numeric values for overlap')
+
+    if any([o < 0 for o in overlap]):
+        raise ValueError('[Error] Encountered values <0 for overlap')
+
+    if any([o >= 1 for o in overlap]):
+        raise ValueError('[Error] Encountered values >= 1 for overlap')
+
+    return overlap
+
+
