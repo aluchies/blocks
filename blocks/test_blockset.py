@@ -19,7 +19,6 @@ class TestCode(unittest.TestCase):
         self.assertEqual(bs.block_shape, None)
         self.assertEqual(bs.step, None)
         self.assertEqual(bs.overlap, None)
-        self.assertEqual(bs.ndim, 1)
 
 
         bs = BlockSet(initlist=[Block([slice(0, 2), slice(0, 2)])])
@@ -28,25 +27,23 @@ class TestCode(unittest.TestCase):
         self.assertEqual(bs.block_shape, None)
         self.assertEqual(bs.step, None)
         self.assertEqual(bs.overlap, None)
-        self.assertEqual(bs.ndim, 2)
 
 
-        bs = BlockSet((2,2))
+        bs = BlockSet(array_shape=(2,2))
         self.assertTrue(isinstance(bs, BlockSet))
         self.assertEqual(bs.array_shape, (2, 2))
         self.assertEqual(bs.block_shape, (2, 2))
         self.assertEqual(bs.step, (2, 2))
         self.assertEqual(bs.overlap, (0, 0))
-        self.assertEqual(bs.ndim, 2)
         self.assertEqual(bs, [ Block( [slice(0, 2, None), slice(0, 2, None)] ) ])
 
-        bs0 = BlockSet((2,))
+        bs0 = BlockSet(array_shape=(2,))
         self.assertTrue(isinstance(bs, BlockSet))
         polygon_vertices = find_vertices([slice(0, 4)])
         bs1 = bs0.filter_blocks(polygon_vertices)
         self.assertEqual(bs0, bs1)
 
-        bs0 = BlockSet((2,))
+        bs0 = BlockSet(array_shape=(2,))
         self.assertTrue(isinstance(bs, BlockSet))
         polygon_vertices = find_vertices([slice(0, 1)])
         bs1 = bs0.filter_blocks(polygon_vertices)
