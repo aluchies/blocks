@@ -8,6 +8,7 @@ class Block(UserList):
 
     def __init__(self, initlist, coordinate_increments=None, coordinate_offsets=None):
 
+
         if isinstance(initlist, Block):
             Block.__init__(self, initlist.data, coordinate_increments,
                             coordinate_offsets)
@@ -30,8 +31,8 @@ class Block(UserList):
             self.vertices = find_vertices(self)
 
             # find vertex coordinates
-            self.coordinate_increments = check_coordinate_increments(coordinate_increments, self)
-            self.coordinate_offsets = check_coordinate_offsets(coordinate_offsets, self)
+            self.coordinate_increments = check_coordinate_increments(coordinate_increments, self.ndim)
+            self.coordinate_offsets = check_coordinate_offsets(coordinate_offsets, self.ndim)
 
             self.vertices_coordinates = block_vertices_to_coordinates(self, 
                 self.coordinate_increments, self.coordinate_offsets)
@@ -194,6 +195,10 @@ def check_slice_list(slice_list):
     """
     """
 
+    if not slice_list:
+        raise ValueError('[Error] Encountered input error for slice_list. ' +
+            'slice_list is empty')
+
     if isinstance(slice_list, slice):
         slice_list = [slice_list]
 
@@ -224,7 +229,7 @@ def check_slice_list(slice_list):
 
 
 
-def check_coordinate_increments(coordinate_increments, block):
+def check_coordinate_increments(coordinate_increments, ndim):
     """
     """
 
@@ -232,13 +237,13 @@ def check_coordinate_increments(coordinate_increments, block):
         coordinate_increments = 1
 
     if isinstance(coordinate_increments, numbers.Number):
-        coordinate_increments = [coordinate_increments] * block.ndim
+        coordinate_increments = [coordinate_increments] * ndim
 
     if not isinstance(coordinate_increments, (tuple, list)):
         raise ValueError('[Error] Encountered input error for coordinate increments. ' +
             'Acceptable input types include list or tuple.')
 
-    if len(coordinate_increments) != block.ndim:
+    if len(coordinate_increments) != ndim:
         raise ValueError('[Error] Encountered input error for coordinate increments. ' +
             'Different number of dimensions for block and coordinate_increments.')
 
@@ -248,19 +253,19 @@ def check_coordinate_increments(coordinate_increments, block):
     return coordinate_increments
 
 
-def check_coordinate_offsets(coordinate_offsets, block):
+def check_coordinate_offsets(coordinate_offsets, ndim):
 
     if coordinate_offsets == None:
         coordinate_offsets = 0
 
     if isinstance(coordinate_offsets, numbers.Number):
-        coordinate_offsets = [coordinate_offsets] * block.ndim
+        coordinate_offsets = [coordinate_offsets] * ndim
 
     if not isinstance(coordinate_offsets, (tuple, list)):
         raise ValueError('[Error] Encountered input error for coordinate offsets. ' +
             'Acceptable input types include list or tuple.')
 
-    if len(coordinate_offsets) != block.ndim:
+    if len(coordinate_offsets) != ndim:
         raise ValueError('[Error] Encountered input error for coordinate offsets. ' +
             'Different number of dimensions for block and coordinate_offsets.')
 

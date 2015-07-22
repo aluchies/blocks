@@ -1,5 +1,6 @@
 from UserList import UserList
-from block import Block, block_in_polygon, block_in_segment
+from block import Block, block_in_polygon, block_in_segment, \
+    check_coordinate_increments, check_coordinate_offsets
 from itertools import product
 import numbers
 
@@ -11,11 +12,20 @@ class BlockSet(UserList):
     """
     """
 
-    def __init__(self, array_shape=None, block_shape=None, step=None, overlap=None, initlist=None):
+    def __init__(self, array_shape=None, block_shape=None, step=None, overlap=None,
+                    coordinate_increments=None, coordinate_offsets=None,
+                    initlist=None):
 
-        # There are two ways to construct a Blockset. Method 1 supercedes 2.
-        # Method 1: provide a list of blocks via initlist
-        if initlist != None:
+        # Several methods to construct a Blockset.
+        # Method 1: Provide another Blockset
+        if isinstance(initlist, BlockSet):
+            BlockSet.__init__(initlist.array_shape, initlist.block_shape,
+                initlist.step, initlist.overlap, initlist.coordinate_increments,
+                initlist.coordinate_offsets, initlist.data)
+
+
+        # Method 2: provide a list of blocks via initlist
+        elif initlist != None:
 
             initlist = list(initlist)
 
@@ -27,13 +37,22 @@ class BlockSet(UserList):
             self.block_shape = block_shape
             self.step = step
             self.overlap = overlap
+            if initlist:
+                self.coordinate_increments = initlist[0].coordinate_increments
+                self.coordinate_offsets = initlist[0].coordinate_offsets
+            else:
+                self.coordinate_increments = coordinate_increments
+                self.coordinate_offsets = coordinate_offsets
 
             if len(initlist) > 0:
                 self.ndim = initlist[0].ndim
             else:
                 self.ndim = 0
 
-        # Method 2: specify array_shape, block_shape, step/overlap
+
+
+
+        # Method 3: specify array_shape, block_shape, step/overlap
         else:
             # check array_shape and block_shape
             self.array_shape = check_array_shape(array_shape)
@@ -52,7 +71,13 @@ class BlockSet(UserList):
 
             self.ndim = len(array_shape)
 
+            # check coordinate_increments and offsets
+            self.coordinate_increments = check_coordinate_increments(coordinate_increments, self.ndim)
+            self.coordinate_offsets = check_coordinate_offsets(coordinate_offsets, self.ndim)
+
             initlist = find_blocks(self.array_shape, self.block_shape, self.step)
+            initlist = [Block(b, coordinate_increments=self.coordinate_increments, coordinate_offsets=self.coordinate_offsets) for b in initlist]
+
 
 
         UserList.__init__(self, initlist)
@@ -60,7 +85,8 @@ class BlockSet(UserList):
 
     def filter_blocks(self, polytope_vertices):
         initlist = filter(lambda x : filter_blocks(x, polytope_vertices), self)
-        return BlockSet(self.array_shape, self.block_shape, self.step, self.overlap, initlist)
+        return BlockSet(self.array_shape, self.block_shape, self.step, self.overlap,
+            self.coordinate_increments, self.coordinate_offsets, initlist)
 
 
 
@@ -139,7 +165,7 @@ def find_blocks(array_shape, block_shape, step):
         blocks.append([slice(coord_i, coord_i + block_shape[n]) for coord_i in coords])
 
 
-    return [Block(b) for b in list(product(*blocks))]
+    return list(product(*blocks))
 
 
 

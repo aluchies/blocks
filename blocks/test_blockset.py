@@ -130,10 +130,10 @@ class TestCode(unittest.TestCase):
         """
 
         blocks = find_blocks((2, 2), (2, 2), (1, 1))
-        self.assertEqual(blocks, [Block([slice(0, 2, None), slice(0, 2, None)])])
+        self.assertEqual(blocks, [(slice(0, 2, None), slice(0, 2, None))])
 
         blocks = find_blocks((2, 2), (1, 1), (2, 2))
-        self.assertEqual(blocks, [Block([slice(0, 1, None), slice(0, 1, None)])])
+        self.assertEqual(blocks, [(slice(0, 1, None), slice(0, 1, None))])
 
 
 
