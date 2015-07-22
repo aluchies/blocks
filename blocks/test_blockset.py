@@ -170,13 +170,6 @@ class TestCode(unittest.TestCase):
 
 
 
-    def test_filter_vertices(self):
-        """
-        """
-
-        v = [[ 73, 7], [ 30 119], [ 28 255], [ 72 437], [ 68 519], [138 598], [242 699], [310 771], [621 779], [807 724], [785 629], [794 554], [847 372], [830 274], [808 169], [880 128], [925  58], [760  12], [ 75   6], [ 73   7]]
-
-
 if __name__ == '__main__':
     print 'Running unit tests for blocks.py'
     unittest.main()

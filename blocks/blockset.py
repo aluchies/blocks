@@ -42,7 +42,7 @@ class BlockSet(UserList):
             # step supercedes overlap, use zero overlap if neither specified
             if step != None:
                 self.step = check_step(step, self.array_shape)
-                self.overlap = step_to_overlap(step, self.block_shape)
+                self.overlap = step_to_overlap(self.step, self.block_shape)
             elif overlap != None:
                 self.overlap = check_overlap(overlap, self.block_shape)
                 self.step = overlap_to_step(self.overlap, self.block_shape)

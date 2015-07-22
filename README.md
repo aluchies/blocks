@@ -18,25 +18,46 @@ All you need to do is specify the array shape, block shape, and step size betwee
 Each `Block` is a list of `slice`s having length equal to the number of dimensions of the array. For example
 
 ```
->>>print(block)
-[slice(x0, x1), slice(y0, y1), ...]
+>>>arr = np.asarray([[0, 1, 2], [3, 4, 5], [6, 7, 8]])
+
+array([[0, 1, 2],
+       [3, 4, 5],
+       [6, 7, 8]])
+
+>>>block = Block([slice(0, 2), slice(0, 2)])
+
+[slice(0, 2, None), slice(0, 2, None)]
+
+>>>arr[block]
+
+array([[0, 1],
+       [3, 4]])
 ```
 
 The corners of a `Block` are included 
 
 ```
->>>print(block.vertices)
+>>>block.vertices
+
 [(0, 0), (0, 1), (1, 1), (1, 0)]
 ```
 
 For 1- and 2-dimensions a method to determine if the block is contained in an arbitrary polytope is provided
 
 ```
->>>print(block.in_polytope(polytope_vertices))
+>>>block.in_polytope(polytope_vertices)
+
 True
 ```
 
 A `BlockSet` is a list of `Block`s that includes a method for generating a collection of blocks given an `array_shape`, `block_shape`, and `step` size.
+
+```
+>>>blockset = BlockSet(array_shape=(3,3), block_shape=(2,2), step=1)
+
+[[slice(0, 2, None), slice(0, 2, None)], [slice(0, 2, None), slice(1, 3, None)], [slice(1, 3, None), slice(0, 2, None)], [slice(1, 3, None), slice(1, 3, None)]]
+```
+
 
 
 
@@ -49,6 +70,6 @@ python setup.py install
 
 
 Notes
-_____
+-----
 
 Some of the functionality requires matplotlib, but blocks can be installed and used without a matplotlib installation.
