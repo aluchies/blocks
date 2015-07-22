@@ -28,14 +28,17 @@ class Block(UserList):
             self.shape = tuple(shape)
 
             # find vertices
-            self.vertices = find_vertices(self)
+            self.vertices = find_vertices(self.data)
 
             # find vertex coordinates
             self.coordinate_increments = check_coordinate_increments(coordinate_increments, self.ndim)
             self.coordinate_offsets = check_coordinate_offsets(coordinate_offsets, self.ndim)
 
-            self.vertices_coordinates = block_vertices_to_coordinates(self, 
+            self.vertices_coordinates = block_vertices_to_coordinates(self.vertices, 
                 self.coordinate_increments, self.coordinate_offsets)
+
+
+
 
 
 
@@ -169,21 +172,16 @@ def find_vertices(block):
 
 
 
-def block_vertices_to_coordinates(block, coordinate_increments, coordinate_offsets):
+def block_vertices_to_coordinates(block_vertices, coordinate_increments, coordinate_offsets):
     """
     """
 
-    if not isinstance(block, Block):
-        raise ValueError('[Error] Encountered input error for block. ' +
-            'block is not a blocks.Block.')
+    num_vertices = len(block_vertices)
+    ndim = len(block_vertices[0])
 
+    coords = [[indices_to_coords(block_vertices[i][n], coordinate_increments[n], coordinate_offsets[n])
+        for n in xrange(ndim)] for i in xrange(num_vertices)]
 
-    coords = list(block.vertices)
-    for i, v in enumerate(block.vertices):
-        for n in xrange(block.ndim):
-            coords[i][n] = indices_to_coords(block.vertices[i][n], 
-                coordinate_increments[n], coordinate_offsets[n]) 
-   
     return coords
 
 

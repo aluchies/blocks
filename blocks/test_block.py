@@ -36,6 +36,7 @@ class TestCode(unittest.TestCase):
 
 
 
+
     def test_find_vertices(self):
         """
         """
@@ -122,17 +123,17 @@ class TestCode(unittest.TestCase):
 
     def test_block_vertices_to_coordinates(self):
         block = Block([slice(0, 2)])
-        vertices_coordinates = block_vertices_to_coordinates(block, [1], [0])
+        vertices_coordinates = block_vertices_to_coordinates(block.vertices, [1], [0])
         self.assertTrue(all([a == b for a, b in zip(block.vertices, vertices_coordinates)]))
 
         # check coordinate_increment
         block = Block([slice(0, 2)])
-        vertices_coordinates = block_vertices_to_coordinates(block, [2], [0])
+        vertices_coordinates = block_vertices_to_coordinates(block.vertices, [2], [0])
         self.assertTrue(all([a == b for a, b in zip([[0], [2]], vertices_coordinates)]))
 
         # check coordinate_offset
         block = Block([slice(0, 2)])
-        vertices_coordinates = block_vertices_to_coordinates(block, [1], [1])
+        vertices_coordinates = block_vertices_to_coordinates(block.vertices, [1], [1])
         self.assertTrue(all([a == b for a, b in zip([[1], [2]], vertices_coordinates)]))
 
 

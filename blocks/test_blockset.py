@@ -49,6 +49,13 @@ class TestCode(unittest.TestCase):
         bs1 = bs0.filter_blocks(polygon_vertices)
         self.assertTrue(bs0 != bs1)
 
+        array_shape = (1000, 1000)
+        block_shape = (600, 600)
+        overlap = 0.
+        bs = BlockSet(array_shape=array_shape, block_shape=block_shape, overlap=overlap,
+                   coordinate_increments=2e-3, coordinate_offsets=0)
+
+
 
 
 
