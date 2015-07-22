@@ -6,20 +6,27 @@ class Block(UserList):
     """
 
     def __init__(self, initlist):
-        initlist = check_slice_list(initlist)
-        UserList.__init__(self, initlist)
 
-        # infer shape
-        ndim = len(self)
-        shape = []
-        for n in xrange(ndim):
-            shape.append( self[n].stop - self[n].start )
+        if isinstance(initlist, Block):
+            Block.__init__(self, initlist.data)
 
-        self.ndim = ndim
-        self.shape = tuple(shape)
 
-        # find vertices
-        self.vertices = find_vertices(self)
+        else:
+            initlist = check_slice_list(initlist)
+            UserList.__init__(self, initlist)
+
+            # infer shape
+            ndim = len(self)
+            shape = []
+            for n in xrange(ndim):
+                shape.append( self[n].stop - self[n].start )
+
+            self.ndim = ndim
+            self.shape = tuple(shape)
+
+            # find vertices
+            self.vertices = find_vertices(self)
+
 
     def in_polytope(self, polytope_vertices):
         if self.ndim == 1:
@@ -173,4 +180,6 @@ def find_vertices(block):
 
 
     return vv
+
+
 

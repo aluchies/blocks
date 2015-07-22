@@ -55,7 +55,8 @@ A `BlockSet` is a list of `Block`s that includes a method for generating a colle
 ```
 >>>blockset = BlockSet(array_shape=(3,3), block_shape=(2,2), step=1)
 
-[[slice(0, 2, None), slice(0, 2, None)], [slice(0, 2, None), slice(1, 3, None)], [slice(1, 3, None), slice(0, 2, None)], [slice(1, 3, None), slice(1, 3, None)]]
+[[slice(0, 2, None), slice(0, 2, None)], [slice(0, 2, None), slice(1, 3, None)], 
+ [slice(1, 3, None), slice(0, 2, None)], [slice(1, 3, None), slice(1, 3, None)]]
 ```
 
 
