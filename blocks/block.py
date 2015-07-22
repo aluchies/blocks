@@ -9,11 +9,13 @@ class Block(UserList):
     def __init__(self, initlist, coordinate_increments=None, coordinate_offsets=None):
 
 
+        # construct block from a second block
         if isinstance(initlist, Block):
             Block.__init__(self, initlist.data, coordinate_increments,
                             coordinate_offsets)
 
 
+        # construct block from list of slices
         else:
             initlist = check_slice_list(initlist)
             UserList.__init__(self, initlist)
@@ -179,7 +181,7 @@ def block_vertices_to_coordinates(block_vertices, coordinate_increments, coordin
     num_vertices = len(block_vertices)
     ndim = len(block_vertices[0])
 
-    coords = [[indices_to_coords(block_vertices[i][n], coordinate_increments[n], coordinate_offsets[n])
+    coords = [[indices_to_coordinates(block_vertices[i][n], coordinate_increments[n], coordinate_offsets[n])
         for n in xrange(ndim)] for i in xrange(num_vertices)]
 
     return coords
@@ -274,13 +276,20 @@ def check_coordinate_offsets(coordinate_offsets, ndim):
 
 
 
-def indices_to_coords(i, dx=1, offset=0):
+def indices_to_coordinates(i, dx=1, offset=0):
     """dx = (X.max() - X.min()) / (N - 1) + offset
     X is an array of x's
     N is the length X
     """
     return i * dx + offset
 
+
+def coordinates_to_indices(x, dx=1, offset=0):
+    """dx = (X.max() - X.min()) / (N - 1) + offset
+    X is an array of x's
+    N is the length X
+    """
+    return int( (x - offset) / dx )
 
 
 

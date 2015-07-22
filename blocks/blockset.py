@@ -16,11 +16,11 @@ class BlockSet(UserList):
                     coordinate_increments=None, coordinate_offsets=None):
 
         # Several methods to construct a Blockset.
+
         # Method 1: Provide another Blockset via initlist
         if isinstance(initlist, BlockSet):
             BlockSet.__init__(initlist.data, initlist.array_shape, initlist.block_shape,
-                initlist.step, initlist.overlap, initlist.coordinate_increments,
-                initlist.coordinate_offsets)
+                initlist.step, initlist.overlap)
 
 
         # Method 2: provide a list of blocks via initlist
@@ -30,7 +30,9 @@ class BlockSet(UserList):
 
             if not all([isinstance(b, Block) for b in initlist]):
                 raise ValueError('[Error] Encountered input error for initlist. ' +
-                    'initlist does not contain Blocks')
+                    'initlist does contains non-Blocks')
+
+            UserList.__init__(self, initlist)
 
 
             self.array_shape = array_shape
@@ -41,7 +43,10 @@ class BlockSet(UserList):
 
 
 
-        # Method 3: specify array_shape, block_shape, step/overlap
+
+
+        # Method 3: specify array_shape, block_shape, step/overlap and use
+        # find_blocks() method
         else:
             # check array_shape and block_shape
             self.array_shape = check_array_shape(array_shape)
@@ -66,9 +71,11 @@ class BlockSet(UserList):
             initlist = find_blocks(self.array_shape, self.block_shape, self.step)
             initlist = [Block(b, coordinate_increments=coordinate_increments, coordinate_offsets=coordinate_offsets) for b in initlist]
 
+            UserList.__init__(self, initlist)
 
 
-        UserList.__init__(self, initlist)
+
+
 
 
     def filter_blocks(self, polytope_vertices):
