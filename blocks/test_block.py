@@ -1,5 +1,6 @@
 import unittest 
-from block import Block, find_vertices, block_in_segment, block_in_polygon
+from block import Block, find_vertices, block_in_segment, block_in_polygon, \
+    block_vertices_to_coordinates
 
 class TestCode(unittest.TestCase):
 
@@ -11,6 +12,7 @@ class TestCode(unittest.TestCase):
         blk = Block([slice(0, 1)])
         self.assertEqual(blk, [slice(0, 1)])
         self.assertEqual(blk.vertices, [[0], [0]])
+        self.assertEqual(blk.vertices_coordinates, [[0], [0]])
         self.assertTrue(blk.in_polytope([[0], [2]]))
         self.assertFalse(blk.in_polytope([[1], [2]]))
 
@@ -22,6 +24,14 @@ class TestCode(unittest.TestCase):
             self.assertTrue(blk.in_polytope(polygon_vertices))
         except:
             print('\nMatplotlib is not installed. tests for block_in_polygon unavailable')
+
+        # Test constructing a block from a second block
+        blk = Block([slice(1, 3), slice(1, 3)])
+        blk2 = Block(blk)
+        self.assertEqual(blk.data, blk2.data)
+        self.assertEqual(blk.coordinate_increments, blk2.coordinate_increments)
+        self.assertEqual(blk.coordinate_offsets, blk2.coordinate_offsets)
+
 
 
 
@@ -109,6 +119,21 @@ class TestCode(unittest.TestCase):
 
         except:
             print('\nMatplotlib is not installed. tests for block_in_polygon unavailable')
+
+    def test_block_vertices_to_coordinates(self):
+        block = Block([slice(0, 2)])
+        vertices_coordinates = block_vertices_to_coordinates(block, [1], [0])
+        self.assertTrue(all([a == b for a, b in zip(block.vertices, vertices_coordinates)]))
+
+        # check coordinate_increment
+        block = Block([slice(0, 2)])
+        vertices_coordinates = block_vertices_to_coordinates(block, [2], [0])
+        self.assertTrue(all([a == b for a, b in zip([[0], [2]], vertices_coordinates)]))
+
+        # check coordinate_offset
+        block = Block([slice(0, 2)])
+        vertices_coordinates = block_vertices_to_coordinates(block, [1], [1])
+        self.assertTrue(all([a == b for a, b in zip([[1], [2]], vertices_coordinates)]))
 
 
 

@@ -1,14 +1,16 @@
 from UserList import UserList
+import numbers
 
 
 class Block(UserList):
     """
     """
 
-    def __init__(self, initlist):
+    def __init__(self, initlist, coordinate_increments=None, coordinate_offsets=None):
 
         if isinstance(initlist, Block):
-            Block.__init__(self, initlist.data)
+            Block.__init__(self, initlist.data, coordinate_increments,
+                            coordinate_offsets)
 
 
         else:
@@ -26,6 +28,15 @@ class Block(UserList):
 
             # find vertices
             self.vertices = find_vertices(self)
+
+            # find vertex coordinates
+            self.coordinate_increments = check_coordinate_increments(coordinate_increments, self)
+            self.coordinate_offsets = check_coordinate_offsets(coordinate_offsets, self)
+
+            self.vertices_coordinates = block_vertices_to_coordinates(self, 
+                self.coordinate_increments, self.coordinate_offsets)
+
+
 
 
     def in_polytope(self, polytope_vertices):
@@ -120,34 +131,6 @@ def block_in_polygon(block_vertices, polygon_vertices):
 
 
 
-def check_slice_list(slice_list):
-    """
-    """
-
-    if isinstance(slice_list, slice):
-        slice_list = [slice_list]
-
-    if not isinstance(slice_list, (tuple, list)):
-        raise ValueError('[Error] Encountered input error for slice_list. ' +
-            'Acceptable input types include list or tuple')
-
-    if not all([isinstance(s, slice) for s in slice_list]):
-        raise ValueError('[Error] Encountered non-slices in slice_list.')
-
-    if not all([isinstance(s.start, int) for s in slice_list]):
-        raise ValueError('[Error] Encountered non-integer values in slice_list.')
-
-    if not all([isinstance(s.stop, int) for s in slice_list]):
-        raise ValueError('[Error] Encountered non-integer values in slice_list.')
-
-    if not all([s.start >= 0 for s in slice_list]):
-        raise ValueError('[Error] Encountered negative values in slice_list.')
-
-    if not all([s.stop >= 0 for s in slice_list]):
-        raise ValueError('[Error] Encountered negative values in slice_list.')
-
-    return slice_list
-
 
 
 
@@ -180,6 +163,122 @@ def find_vertices(block):
 
 
     return vv
+
+
+
+
+
+def block_vertices_to_coordinates(block, coordinate_increments, coordinate_offsets):
+    """
+    """
+
+    if not isinstance(block, Block):
+        raise ValueError('[Error] Encountered input error for block. ' +
+            'block is not a blocks.Block.')
+
+
+    coords = list(block.vertices)
+    for i, v in enumerate(block.vertices):
+        for n in xrange(block.ndim):
+            coords[i][n] = indices_to_coords(block.vertices[i][n], 
+                coordinate_increments[n], coordinate_offsets[n]) 
+   
+    return coords
+
+
+
+
+
+
+def check_slice_list(slice_list):
+    """
+    """
+
+    if isinstance(slice_list, slice):
+        slice_list = [slice_list]
+
+    if not isinstance(slice_list, (tuple, list)):
+        raise ValueError('[Error] Encountered input error for slice_list. ' +
+            'Acceptable input types include list or tuple')
+
+    if not all([isinstance(s, slice) for s in slice_list]):
+        raise ValueError('[Error] Encountered non-slices in slice_list.')
+
+    if not all([isinstance(s.start, int) for s in slice_list]):
+        raise ValueError('[Error] Encountered non-integer values in slice_list.')
+
+    if not all([isinstance(s.stop, int) for s in slice_list]):
+        raise ValueError('[Error] Encountered non-integer values in slice_list.')
+
+    if not all([s.start >= 0 for s in slice_list]):
+        raise ValueError('[Error] Encountered negative values in slice_list.')
+
+    if not all([s.stop >= 0 for s in slice_list]):
+        raise ValueError('[Error] Encountered negative values in slice_list.')
+
+    return slice_list
+
+
+
+
+
+
+
+def check_coordinate_increments(coordinate_increments, block):
+    """
+    """
+
+    if coordinate_increments == None:
+        coordinate_increments = 1
+
+    if isinstance(coordinate_increments, numbers.Number):
+        coordinate_increments = [coordinate_increments] * block.ndim
+
+    if not isinstance(coordinate_increments, (tuple, list)):
+        raise ValueError('[Error] Encountered input error for coordinate increments. ' +
+            'Acceptable input types include list or tuple.')
+
+    if len(coordinate_increments) != block.ndim:
+        raise ValueError('[Error] Encountered input error for coordinate increments. ' +
+            'Different number of dimensions for block and coordinate_increments.')
+
+    if not all([isinstance(d, numbers.Number) for d in coordinate_increments]):
+        raise ValueError('[Error] Encountered non-numeric values for coordinate_increments.')
+
+    return coordinate_increments
+
+
+def check_coordinate_offsets(coordinate_offsets, block):
+
+    if coordinate_offsets == None:
+        coordinate_offsets = 0
+
+    if isinstance(coordinate_offsets, numbers.Number):
+        coordinate_offsets = [coordinate_offsets] * block.ndim
+
+    if not isinstance(coordinate_offsets, (tuple, list)):
+        raise ValueError('[Error] Encountered input error for coordinate offsets. ' +
+            'Acceptable input types include list or tuple.')
+
+    if len(coordinate_offsets) != block.ndim:
+        raise ValueError('[Error] Encountered input error for coordinate offsets. ' +
+            'Different number of dimensions for block and coordinate_offsets.')
+
+    if not all([isinstance(d, numbers.Number) for d in coordinate_offsets]):
+        raise ValueError('[Error] Encountered non-numeric values for coordinate_offsets.')
+
+    return coordinate_offsets
+
+
+
+def indices_to_coords(i, dx=1, offset=0):
+    """dx = (X.max() - X.min()) / (N - 1) + offset
+    X is an array of x's
+    N is the length X
+    """
+    return i * dx + offset
+
+
 
 
 
