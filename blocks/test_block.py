@@ -1,6 +1,6 @@
 import unittest 
 from block import Block, find_vertices, block_in_segment, block_in_polygon, \
-    block_vertices_to_coordinates
+    block_vertices_to_coordinates, block_coordinates_to_vertices
 
 class TestCode(unittest.TestCase):
 
@@ -136,6 +136,21 @@ class TestCode(unittest.TestCase):
         vertices_coordinates = block_vertices_to_coordinates(block.vertices, [1], [1])
         self.assertTrue(all([a == b for a, b in zip([[1], [2]], vertices_coordinates)]))
 
+
+    def test_block_coordinates_to_vertices(self):
+        block = Block([slice(0, 2)], [1], [0])
+        vertices = block_coordinates_to_vertices(block.vertices_coordinates, [1], [0])
+        self.assertTrue(all([a == b for a, b in zip(block.vertices, vertices)]))
+
+        # check coordinate_increment
+        block = Block([slice(0, 2)], [2], [0])
+        vertices = block_coordinates_to_vertices(block.vertices_coordinates, [2], [0])
+        self.assertTrue(all([a == b for a, b in zip(block.vertices, vertices)]))
+
+        # check coordinate_offset
+        block = Block([slice(0, 2)], [1], [1])
+        vertices = block_coordinates_to_vertices(block.vertices_coordinates, [1], [1])
+        self.assertTrue(all([a == b for a, b in zip(block.vertices, vertices)]))
 
 
 

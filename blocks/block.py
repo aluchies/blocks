@@ -187,6 +187,19 @@ def block_vertices_to_coordinates(block_vertices, coordinate_increments, coordin
     return coords
 
 
+def block_coordinates_to_vertices(block_coordinates, coordinate_increments, coordinate_offsets):
+    """
+    """
+
+    num_vertices = len(block_coordinates)
+    ndim = len(block_coordinates[0])
+
+    vertices = [[coordinates_to_indices(block_coordinates[i][n], coordinate_increments[n], coordinate_offsets[n])
+        for n in xrange(ndim)] for i in xrange(num_vertices)]
+
+    return vertices
+
+
 
 
 
