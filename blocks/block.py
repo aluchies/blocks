@@ -97,7 +97,7 @@ def block_in_polygon(block_vertices, polygon_vertices):
     """
 
     try:
-        from matplotlib.path import Path 
+        from matplotlib.path import Path
         #print('\nMatplotlib is installed.')
 
     except:
@@ -118,6 +118,8 @@ def block_in_polygon(block_vertices, polygon_vertices):
         polygon_vertices = polygon_vertices + [polygon_vertices[0]]
 
     # create path object
+    # Path wants [x, y], while vertices are [y, x]. It's okay though because
+    # polygon_path and block_path have the same discrepancy
     polygon_path = Path(polygon_vertices, closed=True)
 
     # repeat first block vertex at end of list

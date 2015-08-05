@@ -305,3 +305,24 @@ def check_overlap(overlap, array_shape):
     return overlap
 
 
+
+
+
+def one_center_block(array_shape, block_shape):
+    """Helper function to return a single block at array center
+    """
+
+    array_shape = check_array_shape(array_shape)
+    block_shape = check_block_shape(block_shape, array_shape)
+
+    bs = []
+    for i, sh in enumerate(array_shape):
+        start = int( round( sh / 2.0 - block_shape[i] / 2.0 ) )
+        stop = start + block_shape[i]
+        bs.append(slice(start, stop))
+
+    block = Block(bs)
+    return BlockSet([block])
+
+
+

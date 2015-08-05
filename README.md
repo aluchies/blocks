@@ -34,7 +34,7 @@ array([[0, 1],
        [3, 4]])
 ```
 
-The corners of a `Block` are included 
+The vertices of a `Block` are included 
 
 ```
 >>>block.vertices
@@ -73,4 +73,4 @@ python setup.py install
 Notes
 -----
 
-Some of the functionality requires matplotlib, but blocks can be installed and used without a matplotlib installation.
+1. Some of the functionality in blocks requires matplotlib, but blocks can be installed and used without a matplotlib installation.

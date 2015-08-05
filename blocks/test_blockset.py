@@ -1,7 +1,7 @@
 import unittest 
 from blockset import BlockSet, \
     check_array_shape, check_block_shape, check_step, check_overlap, \
-    overlap_to_step, step_to_overlap, find_blocks
+    overlap_to_step, step_to_overlap, find_blocks, one_center_block
 from block import Block, find_vertices
 
 class TestCode(unittest.TestCase):
@@ -171,6 +171,37 @@ class TestCode(unittest.TestCase):
 
         overlap = step_to_overlap( (2, 2), (4, 4) )
         self.assertEqual(overlap, (0.5, 0.5))
+
+
+    def test_one_center_block(self):
+        """
+        """
+
+        array_shape = [5, 5]
+        block_shape = [2, 2]
+        bs = one_center_block(array_shape, block_shape)
+        bs_real = [slice(2, 4), slice(2, 4)]
+        self.assertTrue(all([s == s_real for s, s_real in zip(bs[0], bs_real)]))
+
+        array_shape = [5, 5]
+        block_shape = [3, 3]
+        bs = one_center_block(array_shape, block_shape)
+        bs_real = [slice(1, 4), slice(1, 4)]
+        self.assertTrue(all([s == s_real for s, s_real in zip(bs[0], bs_real)]))
+
+        array_shape = [6, 6]
+        block_shape = [2, 2]
+        bs = one_center_block(array_shape, block_shape)
+        bs_real = [slice(2, 4), slice(2, 4)]
+        self.assertTrue(all([s == s_real for s, s_real in zip(bs[0], bs_real)]))
+
+        array_shape = [6, 6]
+        block_shape = [3, 3]
+        bs = one_center_block(array_shape, block_shape)
+        bs_real = [slice(2, 5), slice(2, 5)]
+        self.assertTrue(all([s == s_real for s, s_real in zip(bs[0], bs_real)]))
+
+
 
 
 
