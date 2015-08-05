@@ -12,15 +12,13 @@ class BlockSet(UserList):
     """
     """
 
-    def __init__(self, initlist=None, array_shape=None, block_shape=None, step=None, overlap=None,
-                    coordinate_increments=None, coordinate_offsets=None):
+    def __init__(self, initlist=None):
 
         # Several methods to construct a Blockset.
 
         # Method 1: Provide another Blockset via initlist
         if isinstance(initlist, BlockSet):
-            BlockSet.__init__(initlist.data, initlist.array_shape, initlist.block_shape,
-                initlist.step, initlist.overlap)
+            BlockSet.__init__(initlist.data)
 
 
         # Method 2: provide a list of blocks via initlist
@@ -30,48 +28,13 @@ class BlockSet(UserList):
 
             if not all([isinstance(b, Block) for b in initlist]):
                 raise ValueError('[Error] Encountered input error for initlist. ' +
-                    'initlist does contains non-Blocks')
+                    'initlist contains non-Blocks')
 
             UserList.__init__(self, initlist)
 
 
-            self.array_shape = array_shape
-            self.block_shape = block_shape
-            self.step = step
-            self.overlap = overlap
 
 
-
-
-
-
-        # Method 3: specify array_shape, block_shape, step/overlap and use
-        # find_blocks() method
-        else:
-            # check array_shape and block_shape
-            self.array_shape = check_array_shape(array_shape)
-            self.block_shape = check_block_shape(block_shape, array_shape)
-
-            # step supercedes overlap, use zero overlap if neither specified
-            if step != None:
-                self.step = check_step(step, self.array_shape)
-                self.overlap = step_to_overlap(self.step, self.block_shape)
-            elif overlap != None:
-                self.overlap = check_overlap(overlap, self.block_shape)
-                self.step = overlap_to_step(self.overlap, self.block_shape)
-            else:
-                self.overlap = check_overlap(0.0, self.block_shape)
-                self.step = overlap_to_step(self.overlap, self.block_shape)
-
-            # check coordinate_increments
-            ndim = len(array_shape)
-            coordinate_increments = check_coordinate_increments(coordinate_increments, ndim)
-            coordinate_offsets = check_coordinate_offsets(coordinate_offsets, ndim)
-
-            initlist = find_blocks(self.array_shape, self.block_shape, self.step)
-            initlist = [Block(b, coordinate_increments=coordinate_increments, coordinate_offsets=coordinate_offsets) for b in initlist]
-
-            UserList.__init__(self, initlist)
 
 
 
@@ -81,8 +44,7 @@ class BlockSet(UserList):
     def filter_blocks(self, polytope_vertices):
         initlist = filter(lambda x : filter_blocks(x, polytope_vertices), self.data)
 
-        return BlockSet(initlist=initlist, array_shape=self.array_shape,
-            block_shape=self.block_shape, step=self.step, overlap=self.overlap)
+        return BlockSet(initlist=initlist)
 
 
 
@@ -134,37 +96,6 @@ def step_to_overlap(step, block_shape):
         overlap.append( 1 - float(step[n]) / block_shape[n] )
 
     return tuple(overlap)
-
-
-
-
-def find_blocks(array_shape, block_shape, step):
-    """Select blocks.
-
-    Keyword arguments:
-    array_shape -- shape of the array being divided: tuple(array_shape_dim0,...)
-    block_shape -- size of the blocks: tuple(block_shape_dim0,...)
-    step -- step size between blocks: tuple(step_dim0, step_dim1,...)
-
-    Return values:
-    blocks -- list of tuples, where each tuple contains slices for a block that 
-                can be used for numpy array indexing
-
-    """
-
-    ndim = len(array_shape)
-
-    blocks = []
-    for n in xrange(ndim):
-        coords = range(array_shape[n] - block_shape[n] + 1)
-        coords = coords[::step[n]]
-        blocks.append([slice(coord_i, coord_i + block_shape[n]) for coord_i in coords])
-
-
-    return list(product(*blocks))
-
-
-
 
 
 
@@ -326,3 +257,53 @@ def one_center_block(array_shape, block_shape):
 
 
 
+
+
+
+def spanning_blocks(array_shape, block_shape, step=None, overlap=None,
+    coordinate_increments=None, coordinate_offsets=None):
+    """Helper function to create overlapping blocks that span the array
+
+    Keyword arguments:
+    array_shape -- shape of the array being divided: tuple(array_shape_dim0,...)
+    block_shape -- size of the blocks: tuple(block_shape_dim0,...)
+    step -- step size between blocks: tuple(step_dim0, step_dim1,...)
+
+    Return values:
+    blockset -- returns set of blocks
+
+    """
+
+    # check array_shape and block_shape
+    array_shape = check_array_shape(array_shape)
+    block_shape = check_block_shape(block_shape, array_shape)
+
+    # step supercedes overlap, use zero overlap if neither specified
+    if step != None:
+        step = check_step(step, array_shape)
+        overlap = step_to_overlap(step, block_shape)
+    elif overlap != None:
+        overlap = check_overlap(overlap, block_shape)
+        step = overlap_to_step(overlap, block_shape)
+    else:
+        overlap = check_overlap(0.0, block_shape)
+        step = overlap_to_step(overlap, block_shape)
+
+    # check coordinate_increments
+    ndim = len(array_shape)
+    coordinate_increments = check_coordinate_increments(coordinate_increments, ndim)
+    coordinate_offsets = check_coordinate_offsets(coordinate_offsets, ndim)
+
+    # find blocks
+    blocks = []
+    for n in xrange(ndim):
+        coords = range(array_shape[n] - block_shape[n] + 1)
+        coords = coords[::step[n]]
+        blocks.append([slice(coord_i, coord_i + block_shape[n]) for coord_i in coords])
+    initlist = list(product(*blocks))
+
+
+    initlist = [Block(b, coordinate_increments=coordinate_increments,
+        coordinate_offsets=coordinate_offsets) for b in initlist]
+
+    return BlockSet(initlist)

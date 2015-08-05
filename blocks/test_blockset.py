@@ -1,7 +1,7 @@
 import unittest 
 from blockset import BlockSet, \
     check_array_shape, check_block_shape, check_step, check_overlap, \
-    overlap_to_step, step_to_overlap, find_blocks, one_center_block
+    overlap_to_step, step_to_overlap, one_center_block, spanning_blocks
 from block import Block, find_vertices
 
 class TestCode(unittest.TestCase):
@@ -15,47 +15,23 @@ class TestCode(unittest.TestCase):
 
         bs = BlockSet(initlist=[Block([slice(0, 2)])])
         self.assertTrue(isinstance(bs, BlockSet))
-        self.assertEqual(bs.array_shape, None)
-        self.assertEqual(bs.block_shape, None)
-        self.assertEqual(bs.step, None)
-        self.assertEqual(bs.overlap, None)
-
+        self.assertEqual(bs, [Block([slice(0, 2)])])
 
         bs = BlockSet(initlist=[Block([slice(0, 2), slice(0, 2)])])
         self.assertTrue(isinstance(bs, BlockSet))
-        self.assertEqual(bs.array_shape, None)
-        self.assertEqual(bs.block_shape, None)
-        self.assertEqual(bs.step, None)
-        self.assertEqual(bs.overlap, None)
+        self.assertEqual(bs, [Block([slice(0, 2), slice(0, 2)])])
 
-
-        bs = BlockSet(array_shape=(2,2))
-        self.assertTrue(isinstance(bs, BlockSet))
-        self.assertEqual(bs.array_shape, (2, 2))
-        self.assertEqual(bs.block_shape, (2, 2))
-        self.assertEqual(bs.step, (2, 2))
-        self.assertEqual(bs.overlap, (0, 0))
-        self.assertEqual(bs, [ Block( [slice(0, 2, None), slice(0, 2, None)] ) ])
-
-        bs0 = BlockSet(array_shape=(2,))
+        bs0 = BlockSet(initlist=[Block([slice(0, 2)])])
         self.assertTrue(isinstance(bs, BlockSet))
         polygon_vertices = find_vertices([slice(0, 4)])
         bs1 = bs0.filter_blocks(polygon_vertices)
         self.assertEqual(bs0, bs1)
 
-        bs0 = BlockSet(array_shape=(2,))
+        bs0 = BlockSet(initlist=[Block([slice(0, 2)])])
         self.assertTrue(isinstance(bs, BlockSet))
         polygon_vertices = find_vertices([slice(0, 1)])
         bs1 = bs0.filter_blocks(polygon_vertices)
         self.assertTrue(bs0 != bs1)
-
-        array_shape = (1000, 1000)
-        block_shape = (600, 600)
-        overlap = 0.
-        bs = BlockSet(array_shape=array_shape, block_shape=block_shape, overlap=overlap,
-                   coordinate_increments=2e-3, coordinate_offsets=0)
-
-
 
 
 
@@ -129,19 +105,6 @@ class TestCode(unittest.TestCase):
         self.assertEqual(overlap, (0.5, 0.5))
 
 
-    def test_find_blocks(self):
-        """
-        """
-
-        blocks = find_blocks((2, 2), (2, 2), (1, 1))
-        self.assertEqual(blocks, [(slice(0, 2, None), slice(0, 2, None))])
-
-        blocks = find_blocks((2, 2), (1, 1), (2, 2))
-        self.assertEqual(blocks, [(slice(0, 1, None), slice(0, 1, None))])
-
-
-
-
 
 
     def test_overlap_to_step(self):
@@ -180,26 +143,47 @@ class TestCode(unittest.TestCase):
         array_shape = [5, 5]
         block_shape = [2, 2]
         bs = one_center_block(array_shape, block_shape)
-        bs_real = [slice(2, 4), slice(2, 4)]
-        self.assertTrue(all([s == s_real for s, s_real in zip(bs[0], bs_real)]))
+        bs_real = [[slice(2, 4), slice(2, 4)]]
+        self.assertEqual(bs, bs_real)
 
         array_shape = [5, 5]
         block_shape = [3, 3]
         bs = one_center_block(array_shape, block_shape)
-        bs_real = [slice(1, 4), slice(1, 4)]
-        self.assertTrue(all([s == s_real for s, s_real in zip(bs[0], bs_real)]))
+        bs_real = [[slice(1, 4), slice(1, 4)]]
+        self.assertEqual(bs, bs_real)
 
         array_shape = [6, 6]
         block_shape = [2, 2]
         bs = one_center_block(array_shape, block_shape)
-        bs_real = [slice(2, 4), slice(2, 4)]
-        self.assertTrue(all([s == s_real for s, s_real in zip(bs[0], bs_real)]))
+        bs_real = [[slice(2, 4), slice(2, 4)]]
+        self.assertEqual(bs, bs_real)
 
         array_shape = [6, 6]
         block_shape = [3, 3]
         bs = one_center_block(array_shape, block_shape)
-        bs_real = [slice(2, 5), slice(2, 5)]
-        self.assertTrue(all([s == s_real for s, s_real in zip(bs[0], bs_real)]))
+        bs_real = [[slice(2, 5), slice(2, 5)]]
+        self.assertEqual(bs, bs_real)
+
+
+    def test_spanning_blocks(self):
+        """
+        """
+
+        array_shape = (2, 2)
+        block_shape = (2, 2)
+        bs = spanning_blocks(array_shape, block_shape)
+        bs_real = [[slice(0, 2), slice(0, 2)]]
+        self.assertEqual(bs, bs_real)
+
+
+        array_shape = (4, 4)
+        block_shape = (2, 2)
+        bs = spanning_blocks(array_shape, block_shape)
+        bs_real = [[slice(0, 2, None), slice(0, 2, None)],
+                   [slice(0, 2, None), slice(2, 4, None)],
+                   [slice(2, 4, None), slice(0, 2, None)],
+                   [slice(2, 4, None), slice(2, 4, None)]]
+        self.assertEqual(bs, bs_real)
 
 
 
