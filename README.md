@@ -4,18 +4,16 @@ blocks
 simple n-dimensional array blocks
 ---------------------------------
 
-Suppose you need to divide an n-dimensional numpy array into blocks. With blocks you can do the following:
+Suppose you need to divide an n-dimensional numpy array into overlapping blocks. With blocks you can do the following:
 
 ```
-blockset = BlockSet(array_shape, block_shape, step)
+blockset = spanning_blocks(array_shape, block_shape, step)
 
 for b in blockset:
 	numpy_array[b]
 ```
 
-All you need to do is specify the array shape, block shape, and step size between blocks. 
-
-Each `Block` is a list of `slice`s having length equal to the number of dimensions of the array. For example
+Instead of creating a list of numpy arrays for each block, keep the original numpy array intact, and used a `BlockSet` to record the indices of the `Block`s. Each `Block` is a list of `slice`s having length equal to the number of dimensions of the array. For example
 
 ```
 >>>arr = np.asarray([[0, 1, 2], [3, 4, 5], [6, 7, 8]])
@@ -50,16 +48,21 @@ For 1- and 2-dimensions a method to determine if the block is contained in an ar
 True
 ```
 
-A `BlockSet` is a list of `Block`s that includes a method for generating a collection of blocks given an `array_shape`, `block_shape`, and `step` size.
+A `BlockSet` is a list of `Block`s. Several helper functions for creating `BlockSet`s are provided, including `spanning_blocks`
 
 ```
->>>blockset = BlockSet(array_shape=(3,3), block_shape=(2,2), step=1)
+>>>blockset = spanning_blocks(array_shape=(3,3), block_shape=(2,2), step=1)
 
 [[slice(0, 2, None), slice(0, 2, None)], [slice(0, 2, None), slice(1, 3, None)], 
  [slice(1, 3, None), slice(0, 2, None)], [slice(1, 3, None), slice(1, 3, None)]]
 ```
 
+and `one_center_block`
 
+>>>blockset = one_center_block(array_shape=(4,4), block_shape=(2,2))
+
+[[slice(1, 3, None), slice(1, 3, None)]]
+```
 
 
 Installation
