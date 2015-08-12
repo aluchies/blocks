@@ -13,7 +13,7 @@ for b in blockset:
 	numpy_array[b]
 ```
 
-Instead of creating a list of numpy arrays for each block, keep the original numpy array intact, and used a `BlockSet` to record the indices of the `Block`s. Each `Block` is a list of `slice`s having length equal to the number of dimensions of the array. For example
+Instead of creating a list of numpy arrays for each block, keep the original numpy array intact, and use a `BlockSet` to record the indices of the `Block`s. Each `Block` is a list of `slice`s having length equal to the number of dimensions of the array. For example
 
 ```
 >>>arr = np.asarray([[0, 1, 2], [3, 4, 5], [6, 7, 8]])
@@ -59,6 +59,7 @@ A `BlockSet` is a list of `Block`s. Several helper functions for creating `Block
 
 and `one_center_block`
 
+```
 >>>blockset = one_center_block(array_shape=(4,4), block_shape=(2,2))
 
 [[slice(1, 3, None), slice(1, 3, None)]]
